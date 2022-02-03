@@ -84,7 +84,8 @@ class SubmissionMode(Mode):
             auth=("student", "student")
         )
         rsp = sess.send(req.prepare())
-
+        print(rsp)
+        
 class _PodStartingMode(Mode):
     ''' please do not import this class '''
     
@@ -109,7 +110,7 @@ class _PodStartingMode(Mode):
         )
         rsp = sess.send(req.prepare())
         print(self.get_edx_anon_id())
-        print(self.cmdline_args.submit_passwd)
+        #print(self.cmdline_args.submit_passwd)
         print(rsp.text)
         print(rsp.text)
         
