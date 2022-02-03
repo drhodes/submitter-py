@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: submitter-tester
+  namespace: edxj
+spec:
+  containers:
+  - name: submitter-tester
+    image: 3.10.2-alpine3.15
+    ports: 
+    - containerPort: 80      
+    lifecycle:
+      postStart:
+        exec:
+          command:
+            - sh
+            - "-c"
+            - >
+              cd ~
+              # consider extending the pythonpath in the python magic code, that would be clean.
+              # todo, use fileset  in the makefile to inject the magic code into ~/.ipython/startup/...
+              # wget https://some.real.url/submitter.py
+              SUBMIT_SERVER_USERID="student"
+              SUBMIT_SERVER_PASSWD="student"
+              echo $SUBMIT_SERVER_PASSWD > outfile.txt
+              #python3 submitter.py --submit-passwd $SUBMIT_SERVER_PASSWD
