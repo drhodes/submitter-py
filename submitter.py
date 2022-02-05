@@ -1,6 +1,7 @@
 import argparse
 import socket
 import requests
+import hashlib
 
 '''
 config.yaml
@@ -45,8 +46,8 @@ def parse_args():
 
 def check_pod_starting_mode(args):
     '''check to make sure all the flags necessary for pod starting mode are used.'''
-    if not args.edx_anon_id: 
-        raise Exception("In pod starting mode, the program must be run with: --edx-anon-id=[todo figure out example here]")
+    # if not args.edx_anon_id: 
+    #     raise Exception("In pod starting mode, the program must be run with: --edx-anon-id=[todo figure out example here]")
      
     if not args.submit_passwd: 
         raise Exception("In pod starting mode, the program must be run with: --submit-passwd=[an actual password]")
@@ -59,13 +60,13 @@ class Mode:
         the lti_launcher. TODO this might need to be cleaned up to
         make remoxblock happy
         '''
-        return socket.gethostname()
+        return generate_jupyterhub_userid(socket.gethostname())
     
 class SubmissionMode(Mode):
-    def __init__(self, answers_json):
-        self.send_request(answers_json)
+    def __init__(self, labname, answers_json):
+        self.send_request(labname, answers_json)
 
-    def send_request(self, answers_json):        
+    def send_request(self, labname, answers_json):        
         '''Sends a request to the submission server that this pod, with this
         ip address and this edx-anon-id is submitting answers,
         trusting that the submission server is going to be checking
@@ -74,12 +75,12 @@ class SubmissionMode(Mode):
         '''
         sess = requests.Session()
         req = requests.Request(
-            url="http://submitter:3000/submit_answer", # there must be a k8s service called submitter.
+            url="http://submitter:3000/submit-answers", # there must be a k8s service called submitter.
             method="POST",
             data={
-                "mode": "submission",
-                "edx_anon_id": self.get_edx_anon_id(),
-                "answers_json": answers_json,
+                "edx-anon-id": self.get_edx_anon_id(),
+                "labname": labname,
+                "lab-answers": answers_json,
             },            
             auth=("student", "student")
         )
@@ -100,19 +101,34 @@ class _PodStartingMode(Mode):
 
         '''
         sess = requests.Session()
+        
         req = requests.Request(
-            url="http://submitter:3000/pod_starting", # ensure a k8s service called submitter exists.
+            url="http://submitter:3000/pod-starting", # ensure a k8s service called submitter exists.
             method="POST",
             data={
-                "edx_anon_id": self.get_edx_anon_id(),                
+                "edx-anon-id": self.get_edx_anon_id(),                
             },
             auth=("staff", self.cmdline_args.submit_passwd)
         )
         rsp = sess.send(req.prepare())
         print(self.get_edx_anon_id())
-        #print(self.cmdline_args.submit_passwd)
         print(rsp.text)
-        print(rsp.text)
+
+
+def generate_jupyterhub_userid(anonymous_student_id):
+    # TODO make sure anonymous_student_id starts with "jupyter-"
+    anon_id = "jupyter-" + anonymous_student_id
+
+    # jupyterhub truncates this and appends a five character hash.
+    # https://tljh.jupyter.org/en/latest/topic/security.html
+    #
+    # where is this done?
+    # https://gist.github.com/martinclaus/c6f229de82769b0b4ae6c7bf3b232106
+    # https://github.com/jupyterhub/the-littlest-jupyterhub/blob/main/tljh/normalize.py
+
+    userhash = hashlib.sha256(anon_id.encode("utf-8")).hexdigest()
+    return f"{anon_id[:26]}-{userhash[:5]}"
+
         
 if __name__ == "__main__":
     # in PodStartingMode.
