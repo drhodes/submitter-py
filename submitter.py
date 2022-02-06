@@ -117,7 +117,7 @@ class _PodStartingMode(Mode):
 
 def generate_jupyterhub_userid(anonymous_student_id):
     # TODO make sure anonymous_student_id starts with "jupyter-"
-    anon_id = "jupyter-" + anonymous_student_id
+    anon_id = anonymous_student_id
 
     # jupyterhub truncates this and appends a five character hash.
     # https://tljh.jupyter.org/en/latest/topic/security.html
