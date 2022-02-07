@@ -81,8 +81,11 @@ class SubmissionMode(Mode):
                 "edx-anon-id": self.get_edx_anon_id(),
                 "labname": labname,
                 "lab-answers": answers_json,
-            },            
+            },
+            # This user/pass is intentional
             auth=("student", "student")
+            # the submitter server is looking at the student's pod's
+            # IP to make sure the answers are legit.
         )
         rsp = sess.send(req.prepare())
         print(rsp)
