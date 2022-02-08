@@ -10,6 +10,7 @@ class SubmitButton {
         this.buildButton();
     }
     
+    // https://jakevdp.github.io/blog/2013/06/01/ipython-notebook-javascript-python-communication/
     handleErrors(out_type, out){
         log("handleErrors called");
         log(out_type);
@@ -53,7 +54,7 @@ class SubmitButton {
     }
     
     submitAnswers(){
-        const cmd = `import submitter; submitter.submit_from_js('${this.labName}', locals)`;
+        const cmd = `import submitter; submitter.submit_from_js('${this.labName}', locals())`;
         log(cmd);
         var kernel = IPython.notebook.kernel;
         log("kernel");
@@ -86,7 +87,6 @@ class SubmitButton {
                             button.submitAnswers();
                         });
                     }
-                    
                 }
             ], 'submit-answers');
         }
