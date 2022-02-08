@@ -10,9 +10,12 @@ SUBMITTER_PY_URL="https://raw.githubusercontent.com/drhodes/submitter-py/main/su
 # put the python submitter script on the path
 wget $SUBMITTER_PY_URL -O $SUBMITTER_PY
 
+pip3 install pyyaml
+
 
 # ------------------------------------------------------------------
 # javascript that enables the submit button
+
 
 SUBMITTER_JS_URL="https://raw.githubusercontent.com/drhodes/submitter-py/main/js/custom.js"
 SUBMITTER_JS_DIR=/home/jovyan/.jupyter/custom/
