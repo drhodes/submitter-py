@@ -160,7 +160,7 @@ def submit_from_js(lab_name, local_env):
             answers[v] = env_lookup(local_env, v)
 
         json_answers = json.dumps(answers)
-        # SubmissionMode(lab_name, json_answers)
+        SubmissionMode(lab_name, json_answers)
         return json_answers
     
     except Exception as e:
