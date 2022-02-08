@@ -2,6 +2,9 @@ import argparse
 import socket
 import requests
 import hashlib
+import traceback
+import yaml
+import json
 
 '''
 config.yaml
@@ -17,7 +20,7 @@ singleuser:
             cd /home/jovyan
             # consider extending the pythonpath in the python magic code, that would be clean.
             # todo, use fileset  in the makefile to inject the magic code into ~/.ipython/startup/...
-
+            
             wget https://some.real.url/submitter.py
             SUBMIT_SERVER_USERID="staff" 
             SUBMIT_SERVER_PASSWD="@staff needs add passwd here."
@@ -132,7 +135,37 @@ def generate_jupyterhub_userid(anonymous_student_id):
     userhash = hashlib.sha256(anon_id.encode("utf-8")).hexdigest()
     return f"{anon_id[:26]}-{userhash[:5]}"
 
+def env_lookup(env, varname):
+    if varname in env:
+        return env[varname]
+    return None
+
+
+
+def jsonerr(msg):
+    return json.dumps({ok: False, error: msg})
+ 
+def submit_from_js(lab_name, local_env):
+    try: 
+        config = yaml.load(open("/tmp/labconfig.yaml"), Loader=yaml.CLoader)
+        if not lab_name in config["Labs"]:
+            return jsonerr((f"Couldn't find lab: {lab_name} in the labconfig.yaml, ",
+                            "please make sure it is the same name as this notebook name")) 
         
+        vars = config["Labs"][lab_name].keys()
+        answers = {}
+        
+        for v in vars:
+            answers[v] = env_lookup(local_env, v)
+
+        json_answers = json.dumps(answers)
+        # SubmissionMode(lab_name, json_answers)
+        return json_answers
+    
+    except Exception as e:
+        return traceback.format_exc()
+
+ 
 if __name__ == "__main__":
     # in PodStartingMode.
     # TODO ensure the submitter service is running!
