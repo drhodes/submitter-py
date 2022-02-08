@@ -27,4 +27,8 @@ mkdir -p $SUBMITTER_JS_DIR
 wget $SUBMITTER_JS_URL -O $SUBMITTER_JS
 
 
+# ------------------------------------------------------------------
+# drop labconfig in the home directory.
+
+cd $HOME
 

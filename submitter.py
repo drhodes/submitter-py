@@ -146,8 +146,9 @@ def jsonerr(msg):
     return json.dumps({ok: False, error: msg})
  
 def submit_from_js(lab_name, local_env):
-    try: 
-        config = yaml.load(open("/tmp/labconfig.yaml"), Loader=yaml.CLoader)
+    try:
+        # labconfig.yaml is located in the notebook directory.
+        config = yaml.load(open("labconfig.yaml"), Loader=yaml.CLoader)
         if not lab_name in config["Labs"]:
             return jsonerr((f"Couldn't find lab: {lab_name} in the labconfig.yaml, ",
                             "please make sure it is the same name as this notebook name")) 
