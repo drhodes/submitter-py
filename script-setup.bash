@@ -10,7 +10,7 @@ SUBMITTER_PY_URL="https://raw.githubusercontent.com/drhodes/submitter-py/main/su
 # put the python submitter script on the path
 wget $SUBMITTER_PY_URL -O $SUBMITTER_PY
 
-pip3 install pyyaml
+python3 -m pip install pyyaml
 
 
 # ------------------------------------------------------------------
