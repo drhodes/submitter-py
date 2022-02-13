@@ -4,6 +4,11 @@
 # ------------------------------------------------------------------
 # python
 
+# the .ipython directory doesn't seem to exist before the user is
+# active, so it needs to be created ahead of time.
+
+mkdir -p /home/jovyan/.ipython
+
 SUBMITTER_PY=/home/jovyan/.ipython/submitter.py
 SUBMITTER_PY_URL="https://raw.githubusercontent.com/drhodes/submitter-py/main/submitter.py"
 
@@ -28,7 +33,7 @@ wget $SUBMITTER_JS_URL -O $SUBMITTER_JS
 
 
 # ------------------------------------------------------------------
-# drop labconfig in the home directory.
+# drop labconfig in the home directory?
 
 cd $HOME
 
